@@ -3,6 +3,7 @@ package com.example.sample
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.sample.ui.main.OsmdroidFragment
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,5 +15,7 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.container, OsmdroidFragment.newInstance())
                     .commitNow()
         }
+        val f = File(getExternalFilesDir(null),"sample.geojson")
+        val o = GeoJSONObject(f)
     }
 }
