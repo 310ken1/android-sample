@@ -1,9 +1,12 @@
 package com.example.sample
 
-import androidx.appcompat.app.AppCompatActivity
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.sample.ui.main.OsmdroidFragment
-import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,10 +15,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, OsmdroidFragment.newInstance())
-                    .commitNow()
+                .replace(R.id.container, OsmdroidFragment.newInstance())
+                .commitNow()
         }
-        val f = File(getExternalFilesDir(null),"sample.geojson")
-        val o = GeoJSONObject(f)
+
+        when {
+            ContextCompat.checkSelfPermission(baseContext, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED -> {
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+            }
+            else -> {
+                registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                    if (isGranted) {
+
+                    } else {
+                        finish()
+                    }
+                }.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
     }
 }

@@ -10,6 +10,8 @@ import com.example.sample.R
 import com.example.sample.databinding.OsmdroidFragmentBinding
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class OsmdroidFragment : Fragment() {
 
@@ -38,6 +40,15 @@ class OsmdroidFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
+
+        binding.map.setMultiTouchControls(true)
+        binding.map.controller.setZoom(18.0)
+
+        var location = MyLocationNewOverlay(
+                GpsMyLocationProvider(context),binding.map)
+        location.enableFollowLocation()
+        location.enableMyLocation()
+        binding.map.overlays.add(location)
     }
 
     override fun onDestroyView() {
@@ -45,4 +56,13 @@ class OsmdroidFragment : Fragment() {
         _binding = null
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.map.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.map.onPause()
+    }
 }
