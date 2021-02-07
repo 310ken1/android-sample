@@ -12,25 +12,24 @@ class GeoJSONObject() {
 
     companion object {
         class GeoJSONException(s: String) : Exception(s) {}
-        open class GeoJSON() {
-            var bbox: Array<Double>? = null
-        }
+        open class GeoJSON(val bbox: Array<Double>)
+        class FeatureCollection(val features: Array<Feature>, bbox: Array<Double>) : GeoJSON(bbox)
+        class Feature(val geometry: Geometry, val properties: JSONObject?, bbox: Array<Double>) :
+            GeoJSON(bbox)
 
-        class FeatureCollection(val features: Array<Feature>) : GeoJSON()
-        class Feature(val geometry: Geometry, val properties: JSONObject?) : GeoJSON()
         open class Geometry
-        class Point(val position: Position) : Geometry() {}
-        class MultiPoint(val positions: Array<Position>) : Geometry() {}
-        class LineString(val positions: Array<Position>) : Geometry() {}
-        class MultiLineString(val lines: Array<LineString>) : Geometry() {}
-        class Polygon(val lines: Array<LineString>) : Geometry() {}
-        class MultiPolygon(val polygons: Array<Polygon>) : Geometry() {}
-        class GeometryCollection(val geometries: Array<Geometry>) : Geometry() {}
+        class Point(val position: Position) : Geometry()
+        class MultiPoint(val positions: Array<Position>) : Geometry()
+        class LineString(val positions: Array<Position>) : Geometry()
+        class MultiLineString(val lines: Array<LineString>) : Geometry()
+        class Polygon(val lines: Array<LineString>) : Geometry()
+        class MultiPolygon(val polygons: Array<Polygon>) : Geometry()
+        class GeometryCollection(val geometries: Array<Geometry>) : Geometry()
         data class Position(
             val latitude: Double,
             val longitude: Double,
             val altitude: Double? = Double.NaN
-        ) {}
+        )
 
         @Throws(JSONException::class, GeoJSONException::class)
         fun parse(geojson: String): FeatureCollection {
@@ -38,12 +37,10 @@ class GeoJSONObject() {
             val type = obj.optString("type")
             if (type != "FeatureCollection")
                 throw GeoJSONException("[FeatureCollection] No FeatureCollection")
-            val collection = FeatureCollection(getFeatures(obj.getJSONArray("features")))
-            val bbox = obj.optJSONArray("bbox")
-            if (null != bbox) {
-                collection.bbox = getBoundingBox(bbox)
-            }
-            return collection
+            return FeatureCollection(
+                getFeatures(obj.getJSONArray("features")),
+                getBoundingBox(obj.optJSONArray("bbox"))
+            )
         }
 
         @Throws(IOException::class, JSONException::class, GeoJSONException::class)
@@ -59,13 +56,15 @@ class GeoJSONObject() {
             return features
         }
 
-        private fun getBoundingBox(array: JSONArray): Array<Double> {
-            if (0 != (array.length() % 2)) throw GeoJSONException("[bbox] length error")
+        private fun getBoundingBox(array: JSONArray?): Array<Double> {
             var bbox = arrayOf<Double>()
-            for (i in 0 until array.length()) {
-                val d = array.optDouble(i)
-                if (d.isNaN()) throw GeoJSONException("[bbox] value is not Double")
-                bbox += d
+            if (null != array) {
+                if (0 != (array.length() % 2)) throw GeoJSONException("[bbox] length error")
+                for (i in 0 until array.length()) {
+                    val d = array.optDouble(i)
+                    if (d.isNaN()) throw GeoJSONException("[bbox] value is not Double")
+                    bbox += d
+                }
             }
             return bbox
         }
@@ -73,25 +72,34 @@ class GeoJSONObject() {
         private fun getFeature(obj: JSONObject): Feature {
             return Feature(
                 getGeometry(obj.getJSONObject("geometry")),
-                obj.optJSONObject("properties")
+                obj.optJSONObject("properties"),
+                getBoundingBox(obj.optJSONArray("bbox"))
             )
         }
 
         private fun getGeometry(obj: JSONObject): Geometry {
             val type = obj.optString("type")
                 ?: throw GeoJSONException("[Geometry] No type")
-            val coordinates = obj.optJSONArray("coordinates")
-                ?: throw GeoJSONException("[Geometry] No coordinates")
             when (type) {
-                "Point" -> return getPoint(coordinates)
-                "MultiPoint" -> return getMultiPoint(coordinates)
-                "LineString" -> return getLineString(coordinates)
-                "MultiLineString" -> return getMultiLineString(coordinates)
-                "Polygon" -> return getPolygon(coordinates)
-                "MultiPolygon" -> return getMultiPolygon(coordinates)
-                "GeometryCollection" -> return getGeometryCollection(coordinates)
+                "Point" -> return getPoint(getCoordinates(obj))
+                "MultiPoint" -> return getMultiPoint(getCoordinates(obj))
+                "LineString" -> return getLineString(getCoordinates(obj))
+                "MultiLineString" -> return getMultiLineString(getCoordinates(obj))
+                "Polygon" -> return getPolygon(getCoordinates(obj))
+                "MultiPolygon" -> return getMultiPolygon(getCoordinates(obj))
+                "GeometryCollection" -> return getGeometryCollection(getGeometries(obj))
                 else -> throw GeoJSONException("[Geometry] type error")
             }
+        }
+
+        private fun getCoordinates(obj: JSONObject): JSONArray {
+            return obj.optJSONArray("coordinates")
+                ?: throw GeoJSONException("[Geometry] No coordinates")
+        }
+
+        private fun getGeometries(obj: JSONObject): JSONArray {
+            return obj.optJSONArray("geometries")
+                ?: throw GeoJSONException("[Geometry] No geometries")
         }
 
         private fun getPosition(array: JSONArray): Position {
