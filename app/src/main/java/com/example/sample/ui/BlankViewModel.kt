@@ -1,7 +1,7 @@
-package com.example.sample.ui.main
+package com.example.sample.ui
 
 import androidx.lifecycle.ViewModel
 
-class OsmdroidViewModel : ViewModel() {
+class BlankViewModel : ViewModel() {
     // TODO: Implement the ViewModel
 }
