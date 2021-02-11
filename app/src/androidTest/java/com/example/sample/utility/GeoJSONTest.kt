@@ -1,13 +1,13 @@
-package com.example.sample
+package com.example.sample.utility
 
 import org.junit.Assert
 import org.junit.Test
 
-class GeoJSONObjectTest {
+class GeoJSONTest {
 
     @Test
     fun point() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -24,17 +24,19 @@ class GeoJSONObjectTest {
             }
             """.trimIndent()
         )
-        Assert.assertTrue(geojson.features[0].geometry is GeoJSONObject.Companion.Point)
-        val geometry = geojson.features[0].geometry as GeoJSONObject.Companion.Point
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
+        Assert.assertTrue(features[0].geometry is GeoJSON.Point)
+        val geometry = features[0].geometry as GeoJSON.Point
         Assert.assertEquals(
-            GeoJSONObject.Companion.Position(0.0, 100.0),
+            GeoJSON.Position(0.0, 100.0),
             geometry.position
         )
     }
 
     @Test
     fun lineStrings() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -54,19 +56,21 @@ class GeoJSONObjectTest {
             }
             """.trimIndent()
         )
-        Assert.assertTrue(geojson.features[0].geometry is GeoJSONObject.Companion.LineString)
-        val geometry = geojson.features[0].geometry as GeoJSONObject.Companion.LineString
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
+        Assert.assertTrue(features[0].geometry is GeoJSON.LineString)
+        val geometry = features[0].geometry as GeoJSON.LineString
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 100.0),
-                GeoJSONObject.Companion.Position(1.0, 101.0)
+                GeoJSON.Position(0.0, 100.0),
+                GeoJSON.Position(1.0, 101.0)
             ), geometry.positions
         )
     }
 
     @Test
     fun polygons_no_holes() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -91,22 +95,24 @@ class GeoJSONObjectTest {
             }
             """.trimIndent()
         )
-        Assert.assertTrue(geojson.features[0].geometry is GeoJSONObject.Companion.Polygon)
-        val geometry = geojson.features[0].geometry as GeoJSONObject.Companion.Polygon
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
+        Assert.assertTrue(features[0].geometry is GeoJSON.Polygon)
+        val geometry = features[0].geometry as GeoJSON.Polygon
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 100.0),
-                GeoJSONObject.Companion.Position(0.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 100.0),
-                GeoJSONObject.Companion.Position(0.0, 100.0)
+                GeoJSON.Position(0.0, 100.0),
+                GeoJSON.Position(0.0, 101.0),
+                GeoJSON.Position(1.0, 101.0),
+                GeoJSON.Position(1.0, 100.0),
+                GeoJSON.Position(0.0, 100.0)
             ), geometry.lines[0].positions
         )
     }
 
     @Test
     fun polygons_with_holes() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -138,31 +144,33 @@ class GeoJSONObjectTest {
             }
             """.trimIndent()
         )
-        Assert.assertTrue(geojson.features[0].geometry is GeoJSONObject.Companion.Polygon)
-        val geometry = geojson.features[0].geometry as GeoJSONObject.Companion.Polygon
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
+        Assert.assertTrue(features[0].geometry is GeoJSON.Polygon)
+        val geometry = features[0].geometry as GeoJSON.Polygon
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 100.0),
-                GeoJSONObject.Companion.Position(0.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 100.0),
-                GeoJSONObject.Companion.Position(0.0, 100.0)
+                GeoJSON.Position(0.0, 100.0),
+                GeoJSON.Position(0.0, 101.0),
+                GeoJSON.Position(1.0, 101.0),
+                GeoJSON.Position(1.0, 100.0),
+                GeoJSON.Position(0.0, 100.0)
             ), geometry.lines[0].positions
         )
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.8, 100.8),
-                GeoJSONObject.Companion.Position(0.2, 100.8),
-                GeoJSONObject.Companion.Position(0.2, 100.2),
-                GeoJSONObject.Companion.Position(0.8, 100.2),
-                GeoJSONObject.Companion.Position(0.8, 100.8)
+                GeoJSON.Position(0.8, 100.8),
+                GeoJSON.Position(0.2, 100.8),
+                GeoJSON.Position(0.2, 100.2),
+                GeoJSON.Position(0.8, 100.2),
+                GeoJSON.Position(0.8, 100.8)
             ), geometry.lines[1].positions
         )
     }
 
     @Test
     fun multiPoints() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -182,19 +190,21 @@ class GeoJSONObjectTest {
             }
             """.trimIndent()
         )
-        Assert.assertTrue(geojson.features[0].geometry is GeoJSONObject.Companion.MultiPoint)
-        val geometry = geojson.features[0].geometry as GeoJSONObject.Companion.MultiPoint
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
+        Assert.assertTrue(features[0].geometry is GeoJSON.MultiPoint)
+        val geometry = features[0].geometry as GeoJSON.MultiPoint
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 100.0),
-                GeoJSONObject.Companion.Position(1.0, 101.0)
+                GeoJSON.Position(0.0, 100.0),
+                GeoJSON.Position(1.0, 101.0)
             ), geometry.positions
         )
     }
 
     @Test
     fun multiLineStrings() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -220,25 +230,27 @@ class GeoJSONObjectTest {
             }
             """.trimIndent()
         )
-        Assert.assertTrue(geojson.features[0].geometry is GeoJSONObject.Companion.MultiLineString)
-        val geometry = geojson.features[0].geometry as GeoJSONObject.Companion.MultiLineString
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
+        Assert.assertTrue(features[0].geometry is GeoJSON.MultiLineString)
+        val geometry = features[0].geometry as GeoJSON.MultiLineString
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 100.0),
-                GeoJSONObject.Companion.Position(1.0, 101.0)
+                GeoJSON.Position(0.0, 100.0),
+                GeoJSON.Position(1.0, 101.0)
             ), geometry.lines[0].positions
         )
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(2.0, 102.0),
-                GeoJSONObject.Companion.Position(3.0, 103.0)
+                GeoJSON.Position(2.0, 102.0),
+                GeoJSON.Position(3.0, 103.0)
             ), geometry.lines[1].positions
         )
     }
 
     @Test
     fun multiPolygons() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -281,40 +293,42 @@ class GeoJSONObjectTest {
             }
             """.trimIndent()
         )
-        Assert.assertTrue(geojson.features[0].geometry is GeoJSONObject.Companion.MultiPolygon)
-        val geometry = geojson.features[0].geometry as GeoJSONObject.Companion.MultiPolygon
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
+        Assert.assertTrue(features[0].geometry is GeoJSON.MultiPolygon)
+        val geometry = features[0].geometry as GeoJSON.MultiPolygon
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(2.0, 102.0),
-                GeoJSONObject.Companion.Position(2.0, 103.0),
-                GeoJSONObject.Companion.Position(3.0, 103.0),
-                GeoJSONObject.Companion.Position(3.0, 102.0),
-                GeoJSONObject.Companion.Position(2.0, 102.0)
+                GeoJSON.Position(2.0, 102.0),
+                GeoJSON.Position(2.0, 103.0),
+                GeoJSON.Position(3.0, 103.0),
+                GeoJSON.Position(3.0, 102.0),
+                GeoJSON.Position(2.0, 102.0)
             ), geometry.polygons[0].lines[0].positions
         )
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 100.0),
-                GeoJSONObject.Companion.Position(0.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 100.0),
-                GeoJSONObject.Companion.Position(0.0, 100.0)
+                GeoJSON.Position(0.0, 100.0),
+                GeoJSON.Position(0.0, 101.0),
+                GeoJSON.Position(1.0, 101.0),
+                GeoJSON.Position(1.0, 100.0),
+                GeoJSON.Position(0.0, 100.0)
             ), geometry.polygons[1].lines[0].positions
         )
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.2, 100.2),
-                GeoJSONObject.Companion.Position(0.8, 100.2),
-                GeoJSONObject.Companion.Position(0.8, 100.8),
-                GeoJSONObject.Companion.Position(0.2, 100.8),
-                GeoJSONObject.Companion.Position(0.2, 100.2)
+                GeoJSON.Position(0.2, 100.2),
+                GeoJSON.Position(0.8, 100.2),
+                GeoJSON.Position(0.8, 100.8),
+                GeoJSON.Position(0.2, 100.8),
+                GeoJSON.Position(0.2, 100.2)
             ), geometry.polygons[1].lines[1].positions
         )
     }
 
     @Test
     fun geometryCollections() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -340,23 +354,25 @@ class GeoJSONObjectTest {
             }
             """.trimIndent()
         )
-        Assert.assertTrue(geojson.features[0].geometry is GeoJSONObject.Companion.GeometryCollection)
-        val geometry = geojson.features[0].geometry as GeoJSONObject.Companion.GeometryCollection
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
+        Assert.assertTrue(features[0].geometry is GeoJSON.GeometryCollection)
+        val geometry = features[0].geometry as GeoJSON.GeometryCollection
         Assert.assertEquals(
-            GeoJSONObject.Companion.Position(0.0, 100.0),
-            (geometry.geometries[0] as GeoJSONObject.Companion.Point).position
+            GeoJSON.Position(0.0, 100.0),
+            (geometry.geometries[0] as GeoJSON.Point).position
         )
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 102.0)
-            ), (geometry.geometries[1] as GeoJSONObject.Companion.LineString).positions
+                GeoJSON.Position(0.0, 101.0),
+                GeoJSON.Position(1.0, 102.0)
+            ), (geometry.geometries[1] as GeoJSON.LineString).positions
         )
     }
 
     @Test
     fun bbox2DFeature() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                 "type": "FeatureCollection",
@@ -382,13 +398,13 @@ class GeoJSONObjectTest {
         )
         Assert.assertArrayEquals(
             arrayOf(-10.0, -10.0, 10.0, 10.0),
-            geojson.features[0].bbox
+            (obj as GeoJSON.FeatureCollectionObject).features[0].bbox
         )
     }
 
     @Test
     fun bbox2DFeatureCollection() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
             {
                "type": "FeatureCollection",
@@ -408,13 +424,13 @@ class GeoJSONObjectTest {
         )
         Assert.assertArrayEquals(
             arrayOf(100.0, 0.0, 105.0, 1.0),
-            geojson.bbox
+            (obj as GeoJSON.FeatureCollectionObject).bbox
         )
     }
 
     @Test
     fun example() {
-        val geojson = GeoJSONObject.parse(
+        val obj = GeoJSON.parse(
             """
            {
                "type": "FeatureCollection",
@@ -466,48 +482,50 @@ class GeoJSONObjectTest {
            }
             """.trimIndent()
         )
+        Assert.assertTrue(obj is GeoJSON.FeatureCollectionObject)
+        val features = (obj as GeoJSON.FeatureCollectionObject).features
         Assert.assertEquals(
-            GeoJSONObject.Companion.Position(0.5, 102.0),
-            (geojson.features[0].geometry as GeoJSONObject.Companion.Point).position
+            GeoJSON.Position(0.5, 102.0),
+            (features[0].geometry as GeoJSON.Point).position
         )
         Assert.assertEquals(
             "value0",
-            geojson.features[0].properties?.getString("prop0")
+            features[0].properties?.getString("prop0")
         )
 
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 102.0),
-                GeoJSONObject.Companion.Position(1.0, 103.0),
-                GeoJSONObject.Companion.Position(0.0, 104.0),
-                GeoJSONObject.Companion.Position(1.0, 105.0)
-            ), (geojson.features[1].geometry as GeoJSONObject.Companion.LineString).positions
+                GeoJSON.Position(0.0, 102.0),
+                GeoJSON.Position(1.0, 103.0),
+                GeoJSON.Position(0.0, 104.0),
+                GeoJSON.Position(1.0, 105.0)
+            ), (features[1].geometry as GeoJSON.LineString).positions
         )
         Assert.assertEquals(
             "value0",
-            geojson.features[1].properties?.getString("prop0")
+            features[1].properties?.getString("prop0")
         )
         Assert.assertEquals(
             0.0,
-            geojson.features[1].properties?.getDouble("prop1")
+            features[1].properties?.getDouble("prop1")
         )
 
         Assert.assertArrayEquals(
             arrayOf(
-                GeoJSONObject.Companion.Position(0.0, 100.0),
-                GeoJSONObject.Companion.Position(0.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 101.0),
-                GeoJSONObject.Companion.Position(1.0, 100.0),
-                GeoJSONObject.Companion.Position(0.0, 100.0),
-            ), (geojson.features[2].geometry as GeoJSONObject.Companion.Polygon).lines[0].positions
+                GeoJSON.Position(0.0, 100.0),
+                GeoJSON.Position(0.0, 101.0),
+                GeoJSON.Position(1.0, 101.0),
+                GeoJSON.Position(1.0, 100.0),
+                GeoJSON.Position(0.0, 100.0),
+            ), (features[2].geometry as GeoJSON.Polygon).lines[0].positions
         )
         Assert.assertEquals(
             "value0",
-            geojson.features[2].properties?.getString("prop0")
+            features[2].properties?.getString("prop0")
         )
         Assert.assertEquals(
             "that",
-            geojson.features[2].properties?.getJSONObject("prop1")?.getString("this")
+            features[2].properties?.getJSONObject("prop1")?.getString("this")
         )
     }
 }
