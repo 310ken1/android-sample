@@ -1,11 +1,11 @@
-package com.example.sample
+package com.example.sample.utility
 
-import com.example.sample.CoordinateConverter.latitude
-import com.example.sample.CoordinateConverter.longitude
-import com.example.sample.CoordinateConverter.pixelX
-import com.example.sample.CoordinateConverter.pixelY
-import com.example.sample.CoordinateConverter.tileX
-import com.example.sample.CoordinateConverter.tileY
+import com.example.sample.utility.CoordinateConverter.latitude
+import com.example.sample.utility.CoordinateConverter.longitude
+import com.example.sample.utility.CoordinateConverter.pixelX
+import com.example.sample.utility.CoordinateConverter.pixelY
+import com.example.sample.utility.CoordinateConverter.tileX
+import com.example.sample.utility.CoordinateConverter.tileY
 import org.junit.Assert
 import org.junit.Test
 
