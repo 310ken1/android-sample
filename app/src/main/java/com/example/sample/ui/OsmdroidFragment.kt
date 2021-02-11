@@ -4,10 +4,13 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.example.sample.R
 import com.example.sample.databinding.OsmdroidFragmentBinding
 import org.osmdroid.config.Configuration
@@ -33,6 +36,7 @@ class OsmdroidFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate savedInstanceState=$savedInstanceState")
+        setHasOptionsMenu(true)
         viewModel = ViewModelProvider(this).get(OsmdroidViewModel::class.java)
     }
 
@@ -110,5 +114,21 @@ class OsmdroidFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         Log.d(TAG, "onDetach")
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(TAG, "onOptionsItemSelected")
+        return when (item.itemId) {
+            R.id.menu_settings -> {
+                parentFragmentManager.beginTransaction().also {
+                    it.hide(this)
+                    it.add(R.id.nav_host_fragment, SettingsFragment(), SettingsFragment.TAG)
+                    it.addToBackStack(null)
+                    it.commit()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

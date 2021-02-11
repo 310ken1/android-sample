@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -30,6 +31,7 @@ class BlankFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(OsmdroidFragment.TAG, "onCreate savedInstanceState=$savedInstanceState")
+        setHasOptionsMenu(true)
         viewModel = ViewModelProvider(this).get(BlankViewModel::class.java)
     }
 
@@ -80,4 +82,19 @@ class BlankFragment : Fragment() {
         Log.d(TAG, "onDetach")
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(TAG, "onOptionsItemSelected")
+        return when (item.itemId) {
+            R.id.menu_settings -> {
+                parentFragmentManager.beginTransaction().also {
+                    it.hide(this)
+                    it.add(R.id.nav_host_fragment, SettingsFragment(), SettingsFragment.TAG)
+                    it.addToBackStack(null)
+                    it.commit()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
