@@ -108,8 +108,9 @@ class GeoJSON(text: String) {
     }
 
     private fun getGeometry(obj: JSONObject): GeometryObject {
-        val type = obj.optString("type")
-            ?: throw GeoJSONException("[Geometry] No type")
+        val type = obj.optString("type").apply {
+            if (isEmpty()) throw GeoJSONException("[Geometry] No type")
+        }
         return when (type) {
             "Point" -> getPoint(obj)
             "MultiPoint" -> getMultiPoint(obj)
@@ -129,7 +130,7 @@ class GeoJSON(text: String) {
 
     private fun getGeometries(obj: JSONObject): JSONArray {
         return obj.optJSONArray("geometries")
-            ?: throw GeoJSONException("[Geometry] No geometries")
+            ?: throw GeoJSONException("[Geometries] No geometries")
     }
 
     private fun getPosition(array: JSONArray): Position {
